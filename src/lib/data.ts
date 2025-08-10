@@ -1,52 +1,41 @@
-export type Evidence = { label: string; url: string };
-export type Amenities = {
-  halalFood?: boolean;
-  noAlcohol?: boolean;
-  prayerRoom?: boolean;
-  mosqueNearby?: boolean;
-  genderedPool?: boolean;
-  privateBeachZones?: boolean;
-};
+import hotels from "@/data/hotels.json";
 
-export type Hotel = {
+export const HOTELS = hotels as {
   id: string;
   name: string;
   city: string;
   country: string;
   stars?: number;
   priceFrom?: number;
-  halalScore: number;
-  partnerUrl: string;
+  halalScore?: number;
   images?: string[];
-  amenities?: Amenities;
-  evidence?: Evidence[];
-};
+  amenities?: {
+    halalFood?: boolean;
+    noAlcohol?: boolean;
+    prayerRoom?: boolean;
+    mosqueNearby?: boolean;
+  };
+}[];
 
-// JSON statisch importeren (build-time) — perfect voor offline ontwikkeling.
-import hotelsJson from "@/data/hotels.json";
-export const HOTELS: Hotel[] = hotelsJson as Hotel[];
+export function filterHotels(
+  list: typeof HOTELS,
+  opts: {
+    city?: string | null;
+    minStars?: number;
+    maxPrice?: number;
+    halalMin?: number;
+  }
+) {
+  const city = (opts.city || "").trim().toLowerCase();
+  const minStars = Number.isFinite(opts.minStars) ? (opts.minStars as number) : 0;
+  const maxPrice = Number.isFinite(opts.maxPrice) ? (opts.maxPrice as number) : 0;
+  const halalMin = Number.isFinite(opts.halalMin) ? (opts.halalMin as number) : 0;
 
-// Helpers voor filters
-export function filterHotels(list: Hotel[], opts: {
-  city?: string;
-  minStars?: number;
-  maxPrice?: number;
-  minHalal?: number;
-  halalFood?: boolean;
-  noAlcohol?: boolean;
-  prayerRoom?: boolean;
-  mosqueNearby?: boolean;
-}){
-  const city = (opts.city || "").toLowerCase().trim();
-  return list.filter(h=>{
-    if (city && !h.city.toLowerCase().includes(city)) return false;
-    if (opts.minStars && (h.stars || 0) < opts.minStars) return false;
-    if (opts.maxPrice && (h.priceFrom || 0) > opts.maxPrice) return false;
-    if (opts.minHalal && h.halalScore < opts.minHalal) return false;
-    if (opts.halalFood && !h.amenities?.halalFood) return false;
-    if (opts.noAlcohol && !h.amenities?.noAlcohol) return false;
-    if (opts.prayerRoom && !h.amenities?.prayerRoom) return false;
-    if (opts.mosqueNearby && !h.amenities?.mosqueNearby) return false;
+  return list.filter((h) => {
+    if (city && !(h.city || "").toLowerCase().includes(city)) return false;
+    if (minStars && (h.stars || 0) < minStars) return false;
+    if (maxPrice && (h.priceFrom || 0) > maxPrice) return false;
+    if (halalMin && (h.halalScore || 0) < halalMin) return false;
     return true;
   });
 }
