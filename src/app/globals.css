@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Tripviu design tokens */
+:root{
+  --tv-bg:#f8faf9;
+  --tv-ink:#0f172a;
+  --tv-muted:#64748b;
+  --tv-brand:#0f766e;      /* emerald-700 */
+  --tv-brand-2:#059669;    /* emerald-600 */
+  --tv-accent:#f59e0b;     /* amber-500 */
+  --tv-card:#ffffff;
+}
+html,body{background:var(--tv-bg);color:var(--tv-ink)}

@@ -1,3 +1,7 @@
+import Stars from "./Stars";
+import Badge from "./Badge";
+import { buildAffiliateUrl } from "@/lib/affiliates";
+
 type Props = {
   hotel: {
     id: string;
@@ -12,20 +16,51 @@ type Props = {
 };
 
 export default function HotelCard({ hotel: h }: Props) {
+  const href = buildAffiliateUrl(h.partnerUrl, { subId: `card_${h.id}` });
+
   return (
-    <a href={`/hotels/${h.id}`} className="block bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-      <div className="h-44 bg-gradient-to-br from-emerald-100 to-yellow-50" />
+    <div className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+      {/* Alleen de image is klikbaar naar detail */}
+      <a href={`/hotels/${h.id}`} className="block">
+        <div className="h-44 bg-gradient-to-br from-emerald-100 to-yellow-50" />
+      </a>
+
       <div className="p-4">
         <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold">{h.name}</div>
-          <div className="text-sm text-yellow-600">{h.stars ? "★".repeat(h.stars) : "—"}</div>
+          <a href={`/hotels/${h.id}`} className="text-lg font-semibold hover:underline">
+            {h.name}
+          </a>
+          <Stars value={h.stars ?? 0} />
         </div>
-        <div className="text-sm text-gray-600">{h.city}, {h.country}</div>
-        <div className="mt-2 text-sm">From <span className="font-semibold">€{h.priceFrom ?? "-"}</span></div>
-        <div className="mt-3 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 text-xs px-2 py-1 rounded">
-          Halal score: <strong>{h.halalScore}/5</strong>
+
+        <div className="text-sm text-gray-600">
+          {h.city}, {h.country}
+        </div>
+
+        <div className="mt-2 text-sm">
+          From <span className="font-semibold">€{h.priceFrom ?? "-"}</span>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Badge>Halal score: <strong>{h.halalScore}/5</strong></Badge>
+        </div>
+
+        <div className="mt-4 flex gap-3">
+          <a
+            href={`/hotels/${h.id}`}
+            className="inline-block border rounded-md px-4 py-2 text-gray-800 hover:bg-gray-50"
+          >
+            Details
+          </a>
+          <a
+            href={href}
+            className="inline-block bg-black text-white rounded-md px-4 py-2 hover:opacity-90"
+            rel="noopener noreferrer"
+          >
+            Boek nu
+          </a>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
