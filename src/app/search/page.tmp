@@ -1,0 +1,67 @@
+import Link from "next/link";
+import { headers } from "next/headers";
+
+export const dynamic = "force-dynamic"; // voorkom caching-issues tijdens dev
+
+async function getHotels(searchParams: Record<string, string | string[] | undefined>) {
+  const qs = new URLSearchParams();
+  if (typeof searchParams.city === "string" && searchParams.city) {
+    qs.set("city", searchParams.city);
+  }
+
+  // Bouw een absolute URL uit de headers (werkt op elke poort)
+  const h = headers();
+  const host = h.get("host") || "localhost:3000";
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const url = `${protocol}://${host}/api/hotels?${qs.toString()}`;
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return { hotels: [] };
+  return res.json();
+}
+
+export default async function Search({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const data = await getHotels(searchParams);
+  const hotels = data.hotels ?? [];
+  const city =
+    typeof searchParams.city === "string" ? searchParams.city : "";
+
+  return (
+    <main className="max-w-6xl mx-auto p-6">
+      <h1 className="text-2xl font-semibold mb-4">
+        Results {city ? `for “${city}”` : ""}
+      </h1>
+
+      {hotels.length === 0 && (
+        <p className="text-gray-600">No results. Try Dubai or Istanbul.</p>
+      )}
+
+      <div className="grid md:grid-cols-3 gap-4">
+        {hotels.map((h: any) => (
+          <div key={h.id} className="border rounded-lg p-4 bg-white">
+            <div className="text-lg font-medium">{h.name}</div>
+            <div className="text-sm text-gray-600">
+              {h.city}, {h.country}
+            </div>
+            <div className="mt-2 text-sm">
+              Stars: {h.stars ?? "-"} · From: €{h.priceFrom ?? "-"}
+            </div>
+            <div className="mt-1 text-sm">
+              Halal score: <strong>{h.halalScore}/5</strong>
+            </div>
+            <Link
+              href={h.partnerUrl}
+              className="mt-4 inline-block bg-black text-white rounded px-3 py-2 hover:opacity-90"
+            >
+              Boek nu
+            </Link>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
