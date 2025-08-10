@@ -1,3 +1,5 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Container from "@/components/Container";
@@ -5,13 +7,11 @@ import Stars from "@/components/Stars";
 import Badge from "@/components/Badge";
 import { HOTELS } from "@/lib/data";
 import { notFound } from "next/navigation";
-import { buildAffiliateUrl } from "@/lib/affiliates";
+import { startLocalBooking } from "@/lib/checkout";
 
 export default function HotelDetail({ params }:{ params:{ id:string } }){
   const h = HOTELS.find(x=>x.id===params.id);
   if (!h) return notFound();
-
-  const href = buildAffiliateUrl(h.partnerUrl, { subId: `detail_${h.id}` });
 
   return (
     <>
@@ -30,9 +30,9 @@ export default function HotelDetail({ params }:{ params:{ id:string } }){
                 <Badge>Halal score: <strong>{h.halalScore}/5</strong></Badge>
                 <Badge>From: <strong>€{h.priceFrom ?? "-"}</strong></Badge>
               </div>
-              <a href={href} className="inline-block mt-6 bg-black text-white rounded-md px-4 py-2 hover:opacity-90">
-                Boek via partner
-              </a>
+              <button onClick={() => startLocalBooking(h.id)} className="inline-block mt-6 bg-black text-white rounded-md px-4 py-2 hover:opacity-90">
+                Boek nu
+              </button>
             </div>
           </div>
         </Container>
