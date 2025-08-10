@@ -8,46 +8,25 @@ import { HOTELS, filterHotels } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 type SP = {
-  city?: string;
-  checkIn?: string;
-  checkOut?: string;
-  adults?: string;
-  children?: string;
-  rooms?: string;
-  minStars?: string;
-  maxPrice?: string;
-  minHalal?: string;
-  halalFood?: string;
-  noAlcohol?: string;
-  prayerRoom?: string;
-  mosqueNearby?: string;
-  sort?: string;
-  page?: string;
+  city?: string; checkIn?: string; checkOut?: string;
+  adults?: string; children?: string; rooms?: string;
+  minStars?: string; maxPrice?: string; minHalal?: string;
+  halalFood?: string; noAlcohol?: string; prayerRoom?: string; mosqueNearby?: string;
+  sort?: string; page?: string;
 };
 
 function nights(ci?: string, co?: string) {
   if (!ci || !co) return undefined;
-  try {
-    const a = new Date(ci);
-    const b = new Date(co);
-    const diff = Math.max(0, (b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
-    return Number.isFinite(diff) ? Math.round(diff) : undefined;
-  } catch {
-    return undefined;
-  }
+  try { const a=new Date(ci), b=new Date(co); const d=Math.max(0,(b.getTime()-a.getTime())/(1000*60*60*24)); return Number.isFinite(d)?Math.round(d):undefined; }
+  catch { return undefined; }
 }
-
 function buildHref(sp: SP, patch: Partial<SP> = {}) {
-  const p = new URLSearchParams();
-  const all: SP = { ...sp, ...patch };
-  for (const [k, v] of Object.entries(all)) {
-    if (v && v !== "") p.set(k, String(v));
-  }
+  const p = new URLSearchParams(); const all: SP = { ...sp, ...patch };
+  for (const [k, v] of Object.entries(all)) if (v && v !== "") p.set(k, String(v));
   return `/search?${p.toString()}`;
 }
 
 export default async function Search({ searchParams }: { searchParams: SP }) {
-  // filter
   let list = filterHotels(HOTELS, {
     city: searchParams.city,
     minStars: parseInt(searchParams.minStars || "0", 10),
@@ -59,16 +38,13 @@ export default async function Search({ searchParams }: { searchParams: SP }) {
     mosqueNearby: searchParams.mosqueNearby === "on",
   });
 
-  // sort
   const sort = searchParams.sort || "";
-  if (sort === "price_asc") list = [...list].sort((a, b) => (a.priceFrom ?? 1e12) - (b.priceFrom ?? 1e12));
-  else if (sort === "price_desc") list = [...list].sort((a, b) => (b.priceFrom ?? -1) - (a.priceFrom ?? -1));
-  else if (sort === "stars_desc") list = [...list].sort((a, b) => (b.stars ?? 0) - (a.stars ?? 0));
-  else if (sort === "halal_desc") list = [...list].sort((a, b) => (b.halalScore ?? 0) - (a.halalScore ?? 0));
+  if (sort === "price_asc") list = [...list].sort((a,b)=>(a.priceFrom??1e12)-(b.priceFrom??1e12));
+  else if (sort === "price_desc") list = [...list].sort((a,b)=>(b.priceFrom??-1)-(a.priceFrom??-1));
+  else if (sort === "stars_desc") list = [...list].sort((a,b)=>(b.stars??0)-(a.stars??0));
+  else if (sort === "halal_desc") list = [...list].sort((a,b)=>(b.halalScore??0)-(a.halalScore??0));
 
-  // pagination
-  const total = list.length;
-  const pageSize = 9;
+  const total = list.length, pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10) || 1);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(currentPage, totalPages);
@@ -84,15 +60,14 @@ export default async function Search({ searchParams }: { searchParams: SP }) {
     <>
       <Navbar />
 
-      {/* STICKY header: titel + sort + filters */}
-      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
+      {/* STICKY BAR */}
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b">
         <Container>
-          <div className="py-4 flex items-end justify-between gap-4">
+          {/* Kop + sorteren */}
+          <div className="py-3 flex items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold mb-1">
-                Results {searchParams.city ? `for “${searchParams.city}”` : ""}
-              </h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-xl font-semibold">Results {searchParams.city ? `for “${searchParams.city}”` : ""}</h1>
+              <p className="text-xs text-gray-600">
                 {searchParams.checkIn && searchParams.checkOut
                   ? `Dates: ${searchParams.checkIn} → ${searchParams.checkOut} (${stayNights ?? "–"} nights)`
                   : "Add dates and guests to refine results."}{" "}
@@ -100,7 +75,7 @@ export default async function Search({ searchParams }: { searchParams: SP }) {
               </p>
             </div>
 
-            <form action="/search" className="hidden md:flex items-center gap-2 pb-1">
+            <form action="/search" className="hidden md:flex items-center gap-2">
               {Object.entries(searchParams).map(([k, v]) => k === "sort" ? null : <input key={k} type="hidden" name={k} defaultValue={v} />)}
               <label className="text-sm text-gray-600">Sort by</label>
               <select name="sort" defaultValue={sort} className="border rounded px-3 py-2 bg-white">
@@ -114,8 +89,8 @@ export default async function Search({ searchParams }: { searchParams: SP }) {
             </form>
           </div>
 
-          {/* Filters bar */}
-          <form action="/search" className="mb-4 grid gap-3 md:grid-cols-8 bg-white p-4 rounded-xl border shadow-sm">
+          {/* Filters */}
+          <form action="/search" className="mb-3 grid gap-3 md:grid-cols-8 bg-white p-4 rounded-xl border shadow-sm">
             <div className="md:col-span-2">
               <label className="block text-[11px] text-gray-500 mb-1">Where do you want to wake up?</label>
               <div className="relative">
@@ -174,15 +149,15 @@ export default async function Search({ searchParams }: { searchParams: SP }) {
         </Container>
       </div>
 
-      {/* Resultaten */}
-      <main className="py-8">
+      {/* RESULTATEN */}
+      <main className="py-6">
         <Container>
           {items.length === 0 && <p className="text-gray-600">No results. Try other filters.</p>}
-
           <div className="grid md:grid-cols-3 gap-6">
             {items.map((h) => <HotelCard key={h.id} hotel={h} />)}
           </div>
 
+          {/* Paginatie */}
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-center gap-3">
               <a href={buildHref(searchParams, { page: String(Math.max(1, page - 1)) })} className={`px-3 py-2 rounded border ${page === 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"}`}>← Prev</a>
