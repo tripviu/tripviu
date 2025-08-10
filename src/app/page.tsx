@@ -1,43 +1,65 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Container from "@/components/Container";
+import GuestsPicker from "@/components/GuestsPicker";
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-[70vh] flex items-center">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-emerald-50 via-white to-white" />
-        <section className="w-full">
-          <Container>
-            <div className="text-center py-14 md:py-20">
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-                Find halal-friendly stays, anywhere.
-              </h1>
-              <p className="mt-4 text-lg text-gray-700">
-                Hotels and resorts that respect your values — for everyone.
-              </p>
+      <main className="min-h-[70vh] flex items-center">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl font-bold tracking-tight text-center">Tripviu</h1>
+            <p className="mt-2 text-gray-700 text-center">Halal-friendly stays. For everyone.</p>
 
-              <form action="/search" className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-                <input
-                  name="city"
-                  placeholder="City (e.g. Dubai)"
-                  className="border rounded-lg px-4 py-3 w-full sm:w-80 bg-white shadow-sm"
-                />
-                <button className="rounded-lg px-5 py-3 bg-black text-white hover:opacity-90 shadow-sm">
+            <form action="/search" className="mt-8 grid gap-3 md:grid-cols-6 bg-white p-4 rounded-xl border shadow-sm">
+              {/* Destination */}
+              <div className="md:col-span-2">
+                <label className="block text-[11px] text-gray-500 mb-1">Where do you want to wake up?</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2" aria-hidden>📍</span>
+                  <input
+                    name="city"
+                    placeholder="City or destination (e.g., Dubai)"
+                    className="w-full border rounded pl-9 pr-3 py-2"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Check-in */}
+              <div>
+                <label className="block text-[11px] text-gray-500 mb-1">Check-in</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2" aria-hidden>📅</span>
+                  <input name="checkIn" type="date" className="w-full border rounded pl-9 pr-3 py-2 bg-white" />
+                </div>
+              </div>
+
+              {/* Check-out */}
+              <div>
+                <label className="block text-[11px] text-gray-500 mb-1">Check-out</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2" aria-hidden>📅</span>
+                  <input name="checkOut" type="date" className="w-full border rounded pl-9 pr-3 py-2 bg-white" />
+                </div>
+              </div>
+
+              {/* Guests & rooms */}
+              <div className="md:col-span-2">
+                <GuestsPicker label="Guests & rooms" defaultAdults={2} defaultChildren={0} defaultRooms={1} />
+              </div>
+
+              {/* Submit */}
+              <div className="md:col-span-6">
+                <button className="w-full bg-black text-white rounded px-4 py-3 hover:opacity-90">
                   Search
                 </button>
-              </form>
-
-              <div className="mt-10 text-sm text-gray-600">
-                Popular:&nbsp;
-                <a className="underline hover:no-underline" href="/search?city=Dubai">Dubai</a> ·
-                <a className="underline hover:no-underline" href="/search?city=Istanbul">Istanbul</a> ·
-                <a className="underline hover:no-underline" href="/search?city=Kuala%20Lumpur">Kuala Lumpur</a>
               </div>
-            </div>
-          </Container>
-        </section>
+            </form>
+          </div>
+        </Container>
       </main>
       <Footer />
     </>

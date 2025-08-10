@@ -1,0 +1,63 @@
+[
+  {
+    "id": "dxb-001",
+    "name": "Aurora Beach Resort",
+    "city": "Dubai",
+    "country": "UAE",
+    "stars": 5,
+    "priceFrom": 189,
+    "halalScore": 4,
+    "partnerUrl": "https://example.com/deeplink?hotel=dxb-001",
+    "images": [
+      "https://source.unsplash.com/960x640/?dubai,resort",
+      "https://source.unsplash.com/960x640/?dubai,hotel",
+      "https://source.unsplash.com/960x640/?beach,resort"
+    ],
+    "amenities": {
+      "halalFood": true,
+      "noAlcohol": true,
+      "prayerRoom": true,
+      "mosqueNearby": true,
+      "genderedPool": false,
+      "privateBeachZones": true
+    },
+    "evidence": [
+      { "label": "Hotel site – dining", "url": "https://example.com/aurora/dining" },
+      { "label": "Google Maps – mosque nearby", "url": "https://maps.google.com/?q=mosque+dubai" }
+    ]
+  },
+  {
+    "id": "ist-001",
+    "name": "Golden Horn Suites",
+    "city": "Istanbul",
+    "country": "Türkiye",
+    "stars": 4,
+    "priceFrom": 99,
+    "halalScore": 3,
+    "partnerUrl": "https://example.com/deeplink?hotel=ist-001",
+    "images": [
+      "https://source.unsplash.com/960x640/?istanbul,hotel",
+      "https://source.unsplash.com/960x640/?istanbul,view",
+      "https://source.unsplash.com/960x640/?turkey,hotel"
+    ],
+    "amenities": { "halalFood": true, "noAlcohol": false, "prayerRoom": true, "mosqueNearby": true },
+    "evidence": [{ "label": "Prayer info", "url": "https://example.com/golden/prayer" }]
+  },
+  {
+    "id": "kul-001",
+    "name": "Cempaka City Hotel",
+    "city": "Kuala Lumpur",
+    "country": "Malaysia",
+    "stars": 4,
+    "priceFrom": 79,
+    "halalScore": 4,
+    "partnerUrl": "https://example.com/deeplink?hotel=kul-001",
+    "images": [
+      "https://source.unsplash.com/960x640/?kuala-lumpur,hotel",
+      "https://source.unsplash.com/960x640/?malaysia,hotel",
+      "https://source.unsplash.com/960x640/?pool,resort"
+    ],
+    "amenities": { "halalFood": true, "noAlcohol": true, "prayerRoom": true, "mosqueNearby": true },
+    "evidence": [{ "label": "No-alcohol policy", "url": "https://example.com/cempaka/policy" }]
+  }
+]

@@ -1,9 +1,11 @@
-export type HalalFeatures = {
-  halalFood: boolean;
-  noAlcohol: boolean;
-  prayerRoom: boolean;
-  mosqueNearby: boolean;
-  genderedPool: boolean;
+export type Evidence = { label: string; url: string };
+export type Amenities = {
+  halalFood?: boolean;
+  noAlcohol?: boolean;
+  prayerRoom?: boolean;
+  mosqueNearby?: boolean;
+  genderedPool?: boolean;
+  privateBeachZones?: boolean;
 };
 
 export type Hotel = {
@@ -13,52 +15,38 @@ export type Hotel = {
   country: string;
   stars?: number;
   priceFrom?: number;
-  features: HalalFeatures;
   halalScore: number;
   partnerUrl: string;
+  images?: string[];
+  amenities?: Amenities;
+  evidence?: Evidence[];
 };
 
-function score(f: HalalFeatures) {
-  const pts =
-    (f.halalFood ? 2 : 0) +
-    (f.noAlcohol ? 2 : 0) +
-    (f.genderedPool ? 2 : 0) +
-    (f.prayerRoom ? 1 : 0) +
-    (f.mosqueNearby ? 1 : 0);
-  return Math.max(1, Math.min(5, Math.round(pts / 2)));
+// JSON statisch importeren (build-time) — perfect voor offline ontwikkeling.
+import hotelsJson from "@/data/hotels.json";
+export const HOTELS: Hotel[] = hotelsJson as Hotel[];
+
+// Helpers voor filters
+export function filterHotels(list: Hotel[], opts: {
+  city?: string;
+  minStars?: number;
+  maxPrice?: number;
+  minHalal?: number;
+  halalFood?: boolean;
+  noAlcohol?: boolean;
+  prayerRoom?: boolean;
+  mosqueNearby?: boolean;
+}){
+  const city = (opts.city || "").toLowerCase().trim();
+  return list.filter(h=>{
+    if (city && !h.city.toLowerCase().includes(city)) return false;
+    if (opts.minStars && (h.stars || 0) < opts.minStars) return false;
+    if (opts.maxPrice && (h.priceFrom || 0) > opts.maxPrice) return false;
+    if (opts.minHalal && h.halalScore < opts.minHalal) return false;
+    if (opts.halalFood && !h.amenities?.halalFood) return false;
+    if (opts.noAlcohol && !h.amenities?.noAlcohol) return false;
+    if (opts.prayerRoom && !h.amenities?.prayerRoom) return false;
+    if (opts.mosqueNearby && !h.amenities?.mosqueNearby) return false;
+    return true;
+  });
 }
-
-const RAW: Omit<Hotel,"halalScore">[] = [
-  {
-    id: "dxb-001",
-    name: "Aurora Beach Resort",
-    city: "Dubai",
-    country: "UAE",
-    stars: 5,
-    priceFrom: 189,
-    features: { halalFood: true, noAlcohol: true, prayerRoom: true, mosqueNearby: true, genderedPool: false },
-    partnerUrl: "https://example.com/deeplink?marker=TRIPVIU&hotel=dxb-001",
-  },
-  {
-    id: "ist-002",
-    name: "Golden Minaret Hotel",
-    city: "Istanbul",
-    country: "Türkiye",
-    stars: 4,
-    priceFrom: 120,
-    features: { halalFood: true, noAlcohol: false, prayerRoom: true, mosqueNearby: true, genderedPool: false },
-    partnerUrl: "https://example.com/deeplink?marker=TRIPVIU&hotel=ist-002",
-  },
-  {
-    id: "dxb-003",
-    name: "Marina Crescent Suites",
-    city: "Dubai",
-    country: "UAE",
-    stars: 5,
-    priceFrom: 230,
-    features: { halalFood: true, noAlcohol: false, prayerRoom: true, mosqueNearby: true, genderedPool: true },
-    partnerUrl: "https://example.com/deeplink?marker=TRIPVIU&hotel=dxb-003",
-  },
-];
-
-export const HOTELS: Hotel[] = RAW.map(h => ({ ...h, halalScore: score(h.features) }));
